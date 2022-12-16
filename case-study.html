@@ -234,12 +234,6 @@
 
             <div class="case-study-subsection">
               <h3>How Does Kafka Work?</h3>
-              <figure>
-                <img
-                  src="assets/images/case-study/kafka.png"
-                  class="case-study-image"
-                />
-              </figure>
               <p>
                 Typically, when talking about Kafka, we are actually referring to a Kafka cluster
                 - a cluster is comprised of several servers, referred to as brokers, working in 
@@ -254,6 +248,12 @@
                 of a single broker. Each instance of a consumer application can then read from a 
                 partition, allowing for parallel processing of messages within a topic.
               </p>
+              <figure>
+                <img
+                  src="assets/images/case-study/kafka.png"
+                  class="case-study-image"
+                />
+              </figure>
               <p>
                 Consumers are organized into consumer groups under a common group ID to enable Kafka’s
                 internal load balancing. It is important to note that while a consumer instance can consume
@@ -475,7 +475,6 @@
                 That being said, Consumer Proxy is an in-house, proprietary solution that is not publicly 
                 available for consumer application developers.
               </p>
-  
               <figure>
                 <img
                   src="assets/images/case-study/existing_solutions.png"
