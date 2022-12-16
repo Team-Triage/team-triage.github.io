@@ -880,12 +880,6 @@
             </div>
             <div class="case-study-subsection">
               <h3>Handling Acks/Nacks</h3>
-              <figure>
-                <img
-                src="assets/images/case-study/ack-nack.gif"
-                class="case-study-image"
-              />
-              </figure>
               <p>	So far, we have covered how messages get from Kafka, through Triage, and to consumer instances.
                  We then explained how Triage’s client library manages receiving these messages and sending
                 responses. We will now cover how Triage handles these responses.
@@ -948,13 +942,14 @@
                  calculating which offset to commit back to Kafka.
 
               </p>
-              <h4>Commit Calculator</h4>
               <figure>
                 <img
-                src="assets/images/case-study/commit-calculator.gif"
+                src="assets/images/case-study/ack-nack.gif"
                 class="case-study-image"
               />
               </figure>
+
+              <h4>Commit Calculator</h4>
 
               <p>
                 To calculate this offset, a component called <span class="snippet">CommitCalculator</span> periodically runs 
@@ -978,6 +973,12 @@
                 successful. Finally, all entries up to and including the offset of the message 
                 just committed are removed from <span class="snippet">Commit Tracker</span>’s hashmap. 
               </p>
+              <figure>
+                <img
+                src="assets/images/case-study/commit-calculator.gif"
+                class="case-study-image"
+              />
+              </figure>
               <p>
                 Having covered commits, we have arrived at the end of a message’s life cycle within a system using Triage.
 
