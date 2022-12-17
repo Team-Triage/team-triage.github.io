@@ -506,6 +506,12 @@
           <!-- Section 5: Introducing Triage -->
           <div class="case-study-section">
             <h2>Introducing Triage</h2>
+            <figure>
+              <img
+                src="assets/images/case-study/triage.png"
+                class="case-study-image"
+              />
+            </figure>
             <p>
               Based on our research, none of the solutions fit all of our requirements – they either were not
               supported in multiple languages, failed to solve HoLB for both causes identified, or were not
@@ -519,21 +525,22 @@
                 Triage will subscribe to a topic on the Kafka cluster and begin consuming messages. When 
                 a message is consumed, it is sent to an instance of a consumer application. This consumer 
                 instance will process the message and send back a status code that reflects whether or not
-                 a message has been successfully processed. Triage uses an internal system of acks and nacks
+                a message has been successfully processed. Triage uses an internal system of 
+                <span class="snippet">acks</span> and <span class="snippet">nacks</span>
                 (acknowledgments and negative acknowledgments) to identify healthy versus poison pill messages.
               </p>
               <p>
-                Internally, Triage uses a commitTracker to determine which messages have been successfully 
+                Internally, Triage uses a <span class="snippet">Commit Tracker</span> to determine which messages have been successfully 
                 acknowledged and can be committed back to Kafka. Once it has done so, those records are deleted
                 from the tracker. For messages that have been negatively acknowledged, Triage utilizes
-                the dead-letter queue pattern to avoid data loss.
+                the dead-letter pattern to avoid data loss.
               </p>
             </div>
             <div class="case-study-subsection">
               <h3>Triage Solves HoLB Caused By Poison Pills</h3>
               <p>
-                When a poison pill is encountered, the consumer instance will send back a nack for that message. 
-                A nack directs Triage to deliver the message record in its entirety to a DynamoDB table. Here,
+                When a poison pill is encountered, the consumer instance will send back a <span class="snippet">nack</span> for that message. 
+                A <span class="snippet">nack</span> directs Triage to deliver the message record in its entirety to a DynamoDB table. Here,
                 it can be accessed at any point in the future for further analysis or work. The partition will
                 not be blocked, and messages can continue to be consumed uninterrupted.
               </p>
@@ -542,12 +549,15 @@
                 src="assets/images/case-study/poison-solved.gif"
                 class="case-study-image"
               />
+              <figcaption>
+                Triage solves HoLB due to poison pills
+              </figcaption>
               </figure>
             </div>
             <div class="case-study-subsection">
               <h3>Triage Solves HoLB Caused by Non-Uniform Consumer Latency</h3>
               <p>
-                With Triage, If a consumer instance takes an unusually long time to process a message, 
+                With Triage, if a consumer instance takes an unusually long time to process a message, 
                 the partition remains unblocked. Messages can continue to be processed using other available
                 consumer instances. Once the consumer instance finishes processing the slow message, it can 
                 continue processing messages. 
@@ -557,6 +567,9 @@
                 src="assets/images/case-study/nucl-solved.gif"
                 class="case-study-image"
               />
+              <figcaption>
+                Triage solves HoLB due to non-uniform consumer latency
+              </figcaption>
               </figure>
             </div>
             <div class="case-study-subsection">
@@ -571,7 +584,7 @@
               <p>
                 Consumer applications can connect to Triage using our <a target="_blank" href="https://github.com/team-triage/triage-client-go#readme">thin client library</a>, currently
                 offered in Go. It handles authenticating with and connecting to Triage and provides
-                an easy-to-use easy interface for developers to indicate whether a message has been
+                an easy-to-use interface for developers to indicate whether a message has been
                 processed successfully.
               </p>
               <figure>
@@ -579,7 +592,7 @@
                 src="assets/images/case-study/triage-dummy-consumer.png"
                 class="case-study-image"
               />                
-              <figcaption>A dummy consumer example</figcaption>
+              <figcaption>An example of a simple consumer application</figcaption>
               </figure>
               </div>
           </div>
@@ -614,7 +627,7 @@
                 client library with an existing system is more manageable than integrating a new service.
               </p>
               <p>
-                There were, however, some disadvantages with this approach – the most immediate being that our solution
+                There were, however, some disadvantages with this approach. Our solution
                 to addressing non-uniform consumer latency relies on parallel processing of a single partition. While,
                 in theory, a client library could support multiple instances of a consumer application, a service 
                 implementation is more straightforward. Even if a client library were to be designed to
@@ -635,7 +648,7 @@
                   a steep learning curve. There are over 40 configuration settings that a Kafka client
                   can specify, making setting up an optimal or even functional consumer application 
                   difficult. Uber, for example, noted that their internal Kafka team was spending about
-                  half of their working hours troubleshooting for consumer application developers.
+                  half of their working hours troubleshooting for consumer application developers [4].
                 </p>
               </div>
               <p>
@@ -650,29 +663,29 @@
               <h5>Network Protocol</h5>
               <p>
                 The next decision that we faced was choosing an appropriate network protocol for communication
-                with downstream applications. HTTP was an obvious consideration both for its ubiquity and ease
+                with consumer applications. HTTP was an obvious consideration both for its ubiquity and ease
                 of implementation; however, after further research, we felt gRPC was the better option.
               </p>
               <p>
                 gRPC allows us to leverage the benefits of HTTP/2 over HTTP/1.1, specifically regarding the
                 size of traffic we send and receive. HTTP/2 uses protocol buffers which are serialized and 
                 emitted as binaries to achieve higher compression than HTTP/1.1, which typically uses the de-facto
-                standard of JSON. Higher compression means less data to send over the network and ultimately faster
+                standard of JSON. Higher compression means less data to send over the network and ultimately, faster
                 throughput.
               </p>
               <button type="button" class="collapsible">gRPC vs JSON + gZip =></button>
               <div class="content">
                 <p>
                   A counterpoint to the compression argument is the existence and growing popularity of JSON 
-                  with gzip. Compression gains from protocol buffers compared JSON with gzip are less impressive;
-                  however, we run into similar dependency pains mentioned in (REFERENCE Service vs. Client
-                  Library Section). Each version of the thin client library we would potentially write must 
+                  with gzip. Compression gains from protocol buffers compared to JSON with gzip are less impressive;
+                  however, we run into similar dependency pains mentioned in our discussion of service versus client library
+                  implementations. Each version of the thin client library we would potentially write must 
                   import its own language’s implementation of gzip. 
                 </p>
               </div>
               <p>
-                gRPC also makes it easy to build out support for multiple languages via out-of-the-box code
-                generation. Using the same gRPC files we’ve used for our triage-client-go library, we can
+                gRPC also makes it easy to build out support for multiple languages via out of the box code
+                generation. Using the same gRPC files we’ve used for Triage's Go client library, we can
                 utilize a simple command-line tool to generate gRPC server and client implementations in
                 all major programming languages.
               </p>
@@ -681,15 +694,15 @@
               <h3>Enabling Parallel Consumption</h3>
               <h4>Challenge</h4>
               <p>
-                Since Triage operates by dispatching messages to several downstream consumer
-                instances, we needed a way to send messages and receive responses simultaneously.
+                Since Triage operates by dispatching messages to several consumer
+                instances, we needed a way to send messages to, and receive responses from, them simultaneously.
                 We knew that the language we chose would play a significant role in solving this
                 challenge.
               </p>
               <h4>Solution</h4>
               <p>
                 By creating dedicated Goroutines for each consumer instance and synchronizing them 
-                with the rest of Triage via channels, we can enable parallel consumption of a single 
+                with the rest of Triage via channels, we enable parallel consumption of a single 
                 Kafka partition.
               </p>
               <h5>Language</h5>
@@ -703,22 +716,31 @@
                 with other functions. The resource overhead of creating and running a Goroutine is
                 negligible, so it’s not uncommon to see programs with thousands of Goroutines. This 
                 sort of multithreaded behavior is easy to use with Go, as a generic function can be 
-                turned into a Goroutine by simply prepending its invocation with the keyword go. Each 
-                major component of a Triage container exists as a Goroutine, which often relies on other
+                turned into a Goroutine by simply prepending its invocation with the keyword <span class="snippet">go</span>. Each 
+                major component of Triage exists as a Goroutine, which often relies on other
                 underlying Goroutines. Channels are used extensively to pass data between these components 
                 and achieve synchronization where needed. 
+              </p>
+              <p>
+                In the figure below, <span class="snippet">myFunc()</span>'s execution will block execution
+                of the print statement <em>"I'm after myFunc!"</em>
               </p>
               <figure>
                 <img src="assets/images/case-study/nogoroutine.PNG">
                 <figcaption>Execution without Goroutines</figcaption>
               </figure>
+              <p>
+                Conversely, the invocation of <span class="snippet">myFunc()</span> below is prepended with the
+                <span class="snippet">go</span> keyword. It will now execute in the background, as a Goroutine, allowing
+                the execution of the print statement.
+              </p>
               <figure>
                 <img src="assets/images/case-study/withgoroutine.png">
                 <figcaption>Execution with Goroutine</figcaption>
               </figure>
               <h6>Channels</h6>
               <p>
-                Channels, in Go, are queue-like data structures that facilitate communication across
+                Channels in Go are queue-like data structures that facilitate communication across
                 processes within a Go application. Channels support passing both primitives and structs. 
                 We can think of a function that writes a given value to a channel as a “sender” and a function 
                 that reads said value off of the channel as a “receiver.” When a sender attempts to write
@@ -729,7 +751,7 @@
               </p>
               <figure>
                 <img src="assets/images/case-study/channels.PNG">
-                <figcaption>Channels Code Snippet</figcaption>
+                <figcaption>A simple example of a channel</figcaption>
               </figure>
             </div>
             <div class="case-study-subsection">
@@ -743,7 +765,7 @@
               <p>
                 By taking advantage of the AWS Cloud Development Kit (CDK) in conjunction with AWS Fargate
                 on Elastic Container Service (ECS), we were able to create an automated deployment script that
-                interacts with our command line tool, triage-cli.This allows users to deploy a failure-resistant
+                interacts with our command line tool, triage-cli. This allows users to deploy a failure-resistant
                 Fargate service to AWS in just a few easy steps.
               </p>
               <h5>AWS Fargate on ECS</h5>
@@ -758,21 +780,17 @@
                 individual virtual private server instances. Instead, we could concern ourselves
                 with relatively simple ECS task and service definitions.
               </p>
-              <button type="button" class="collapsible">ECS Tasks and Services =></button>
-              <div class="content">
-                <p>
-                  In our case, a task is a single container running Triage. A service is a collection 
-                  of these tasks, with the number of tasks being equal to the number of partitions for a given topic.
-                </p>
-              </div>
               <p>
-                The service definition is vital to how we guard against failure - if a Triage container
-                 were to fail, it would be scrapped and another would immediately be provisioned automatically.
+                In our case, we define a task as a single container running Triage. Our service definition is a collection 
+                of these tasks, with the number of tasks being equal to the number of partitions for a given topic.
+                
+                This service definition is vital to how we guard against failure - if a Triage container
+                were to crash, it would be scrapped and another would immediately be provisioned automatically.
               </p>
               <button type="button" class="collapsible">Health Checks and Logs =></button>
               <div class="content">
                 <p>
-                  Using Fargate, however, doesn’t mean that we sacrifice any of the benefits
+                  Using Fargate doesn’t mean that we sacrifice any of the benefits
                   that come with ECS since Fargate exists on top of ECS. Health checks and
                   logs, as well as all of the infrastructure created during the deployment,
                   are available to and owned by a user, since Triage deploys using the AWS 
@@ -780,18 +798,18 @@
                 </p>
               </div>
               <p>
-                Automated deployment is supported via Amazon’s Cloud Development Kit (CDK). 
+                Automated deployment is enabled by CDK. 
                 Manually deploying Triage would require an understanding of cloud-based networking
-                that would take up significant overhead. Amazon’s CDK abstracts that away – instead
+                that would increase technical overhead. Amazon’s CDK abstracts that away – instead
                 of having to set up the dozens of individual entities that must be provisioned and 
                 interconnected for a working cloud deployment, we were able to use ready-made templates
                 provided by CDK for a straightforward deployment script.
               </p>
-              <h5>Triage CLI</h5>
+              <h5>triage-cli</h5>
               <p>
                 We created triage-cli to interact with the deployment script created with AWS CDK. This allows 
                 us to interpolate user-specific configuration details into the script and deploy using just two
-                commands – triage init and triage deploy.
+                commands – <span class="snippet">triage init</span> and <span class="snippet">triage deploy</span>.
               </p>
             </div>
           </div>
@@ -807,7 +825,7 @@
             <p>
               Having found solutions to our design challenges, our next step in developing Triage was 
               implementation. In this section, we will discuss the components that make up the application
-              logic of a Triage container as well as provide a brief overview of how the Triage Client 
+              logic of a Triage container, as well as provide a brief overview of how our thin client library 
               interacts with it. We will address implementation with the following subsections:
               <ol class="numbered-list">
                 <li><strong>Message Flow</strong> - How Triage pulls messages from Kafka and sends them to consumers</li>
@@ -828,17 +846,17 @@
                 messages. It then writes these messages to the <span class="snippet">Commit Tracker</span> component and sends them to 
                 the messages channel. We will discuss the <span class="snippet">Commit Tracker</span> in a later section - for now, it is
                 sufficient to know that a copy of a message ingested by Triage is stored in a hashmap, 
-                and a reference to this message is sent over the messages channel.
+                and a reference to this message is sent over the <span class="snippet">messages</span> channel.
               </p>
               <h4>Consumer Manager</h4>
               <p>
-                At this point in the flow, messages from Kafka are sitting in the messages channel and are
+                At this point in the flow, messages from Kafka are sitting in the <span class="snippet">messages</span> channel and are
                 ready to be processed. The <span class="snippet">Consumer Manager</span> component runs a simple HTTP server that listens
                 for incoming requests from consumer instances. After authenticating a request, the <span class="snippet">Consumer
                 Manager</span> parses the consumer instance’s network address and writes it to the <span class="snippet">newConsumers</span> channel.
               </p>
               <p>
-                To recap, at this point in the flow, we have messages from Kafka in a messages channel and
+                To recap, we now have messages from Kafka in a <span class="snippet">messages</span> channel and
                 network addresses to send them to in a <span class="snippet">newConsumers</span> channel. 
               </p>
               <h4>Dispatch</h4>
@@ -857,19 +875,18 @@
                 and listens for the next network address, <span class="snippet">senderRoutine</span> continues to run in the background.
               </p>
               <p>
-                <span class="snippet">senderRoutine</span> is essentially a for loop. First, a message is pulled off of the messages
+                <span class="snippet">senderRoutine</span> is essentially a <span class="snippet">for</span> loop. First, a message is pulled off of the messages
                 channel. The gRPC client passed to <span class="snippet">senderRoutine</span> is then used to send this message over
-                the network to the consumer instance. The senderRoutine now waits for a response.
+                the network to the consumer instance. The <span class="snippet">senderRoutine</span> now waits for a response.
               </p>
             </div>
             <div class="case-study-subsection">
               <h3>Consumer Instances</h3>
               <p>
-                Having discussed how messages get from Kafka to consumer instances, we will now
-                discuss how consumer instances receive messages from and respond to Triage.
+                We will now discuss how consumer instances receive messages from, and send responses to, Triage.
               </p>
               <p>
-                Consumer applications interact with Kafka using the Triage Client. The client library is responsible for the following:
+                Consumer applications interact with Triage using the Triage Client. This client library is responsible for the following:
               </p>
               <ol class="numbered-list">
                 <li>Providing a convenience method to send an HTTP request to Triage</li>
@@ -882,7 +899,7 @@
               <h4>Message Handler</h4>
               <p>
                 Developers first pass the client library a message handler function – the message handler 
-                should accept a Kafka message as a parameter, process the message, and then return either a
+                should have a Kafka message as a parameter, process the message, and return either a
                 positive or negative integer based on the outcome of the processing. This integer is how 
                 consumer application developers can indicate whether a message has or has not been successfully
                 processed.
@@ -892,9 +909,9 @@
                 When the consumer application is started, it runs a gRPC server that listens on a dedicated port.
                 When the server receives a message from Triage, it invokes the message handler, with the message
                 as an argument. If the message handler returns a positive integer, it indicates that the message
-                was successfully processed, and a positive acknowledgment or <span class="snippet">ack</span> is sent back to Triage. If
+                was successfully processed, and an <span class="snippet">ack</span> is sent back to Triage. If
                 the handler returns a negative integer, it indicates that the message was not processed 
-                successfully, and a negative acknowledgment or <span class="snippet">nack</span>is sent to Triage.
+                successfully, and a <span class="snippet">nack</span> is sent to Triage.
               </p>
             </div>
             <div class="case-study-subsection">
@@ -907,11 +924,11 @@
               <p>
                 As discussed in the message flow section, after sending a message to a consumer instance,
                 <span class="snippet">senderRoutine</span> waits for a response. When a response is received, <span class="snippet">senderRoutine</span> creates an 
-                <span class="snippet">acknowledgment</span> struct. The struct has two fields - <span class="snippet">Status</span> and <span class="snippet">Message</span>
-                The <span class="snippet">Status</span> field of the acknowledgment struct indicates either a positive or negative acknowledgment. If the
+                <span class="snippet">acknowledgment</span> struct. The struct has two fields - <span class="snippet">Status</span> and <span class="snippet">Message</span>.
+                The <span class="snippet">Status</span> field indicates either a positive or negative acknowledgment. If the
                 response was a <span class="snippet">nack</span>, a reference to the message is saved under the <span class="snippet">Message</span> field of the 
-                struct.  For <span class="snippet">acked</span> messages, the Message field can be nil. Finally, before looping to send
-                another message, senderRoutine places the acknowledgment struct on the acknowledgments channel. 
+                struct.  For <span class="snippet">acked</span> messages, the <span class="snippet">Message</span> field can be <span class="snippet">nil</span>. Finally, before looping to send
+                another message, <span class="snippet">senderRoutine</span> places the struct on the <span class="snippet">acknowledgments</span> channel. 
               </p>
               <h4>Filter</h4>
               <p>
@@ -949,7 +966,7 @@
               <p>As discussed in the message flow section, as messages are ingested by Triage,
                  we store a reference to them in a hashmap. The hashmap’s keys are the offsets 
                  of the messages, and the values are a custom struct called <span class="snippet">CommitStore</span>. The 
-                 <span class="snippet">commitStore</span> struct has two fields - <span class="snippet">Value</span> and <span class="snippet">Message</span>. 
+                 <span class="snippet">CommitStore</span> struct has two fields - <span class="snippet">Message</span> and <span class="snippet">Value</span> . 
                  The <span class="snippet">Message</span> field stores a reference to a specific Kafka message; the <span class="snippet">Value</span> field stores whether
                  or not Triage has received a response for this message.
               </p>
@@ -966,12 +983,15 @@
                 src="assets/images/case-study/ack-nack.gif"
                 class="case-study-image"
               />
+              <figcaption>
+                <span class="snippet">Commit Tracker</span> in action
+              </figcaption>
               </figure>
 
               <h4>Commit Calculator</h4>
 
               <p>
-                To calculate this offset, a component called <span class="snippet">CommitCalculator</span> periodically runs 
+                To calculate which offset to commit, a component called <span class="snippet">CommitCalculator</span> periodically runs 
                 in the background.  To be efficient with our commits, we want to commit the highest
                 offset possible since Kafka will implicitly commit all messages below our committed
                 offset. For example, if there are 100 messages in a partition and we commit 
@@ -982,8 +1002,8 @@
                 in the hashmap. If we have received acknowledgments for offsets 0 through 48 – 
                 and offset 50 –  but have not yet received an acknowledgment for offset 49, we 
                 cannot commit offset 50 since that would imply that 49 has been successfully processed.
-                Instead, we could only commit offset 48 and would have to wait for the acknowledgment
-                for 49 before committing 50. (diagram here is definitely needed)
+                Instead, we can only commit offset 48 and have to wait for the acknowledgment
+                for 49 before committing 50.
               </p>
               <p>
                 In other words, <span class="snippet">Commit Tracker</span> commits the greatest offset for which all previous 
@@ -997,6 +1017,9 @@
                 src="assets/images/case-study/commit-calculator.gif"
                 class="case-study-image"
               />
+              <figcaption>
+                <span class="snippet">CommitCalculator</span> finding the most efficient offset to commit
+              </figcaption>
               </figure>
               <p>
                 Having covered commits, we have arrived at the end of a message’s life cycle within a system using Triage.
@@ -1022,18 +1045,17 @@
             <div class="case-study-subsection">
               <h3>Cause of Failure Field</h3>
               <p>
-                Giving the consumer application developer the ability to add a reason for failure to poison
-                pill messages would help them to identify errors and analyze them. It would be a custom field 
-                supplied by the developer that would be stored with the message record under a different column
-                in the DynamoDB table.
+                Giving developers the ability to add a reason for failed messages would help them identify and analyze errors.
+                Developers could supply a custom field on the <span class="snippet">nack</span> sent to Triage. We would
+                store this field with the message record in the DynamoDB table.
               </p>
             </div>
             <div class="case-study-subsection">
               <h3>Notifications for Poison Pills</h3>
               <p>
-                We believers developers could benefit from notifications when poison pills are written to DynamoDB. 
+                We believe developers could benefit from notifications when poison pills are written to DynamoDB. 
                 Having these notifications integrated with a platform like Slack could serve as an alarm to 
-                avoid further issues. One approach would be to use AWS Cloudwatch to implement this feature.
+                respond rapidly. We think this is a relatively easy feature to implement and is likely our next step.              
               </p>
             </div>
           </div>   
