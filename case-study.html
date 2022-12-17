@@ -161,7 +161,7 @@
               <p>
                 Over the last decade, microservices have become a popular architectural 
                 choice for building applications. By one estimate from 2020, 63% of enterprises
-                have adopted microservices, and many are satisfied with the tradeoffs [1].
+                have adopted microservices, and many are satisfied with the tradeoffs <a href="https://dzone.com/articles/new-research-shows-63-percent-of-enterprises-are-a ">[1]</a>.
                 Decoupling services often leads to faster development time since work on 
                 different services can be done in parallel. Additionally, many companies benefit
                 from the ability to independently scale individual components of their architecture, 
@@ -226,7 +226,7 @@
                 In a traditional message queue, events are read and then removed from the
                 queue. An alternative approach is to use log-based message queues, which persist
                 events to a log. Among log-based message queues, Kafka is the most popular
-                – over 80% of Fortune 100 companies use Kafka as part of their architecture[2].
+                – over 80% of Fortune 100 companies use Kafka as part of their architecture <a href="https://kafka.apache.org/">[2]</a>.
                 Kafka is designed for parallelism and scalability and maintains the intended
                 decoupling of an EDA. In Kafka, events are called messages.
               </p>
@@ -425,7 +425,7 @@
               <p>
                 Confluent Parallel Consumer (CPC) is a Java Kafka Consumer library that seemingly
                 addresses HoLB by offering an increase in parallelism beyond partition count for
-                a given topic. It operates by processing messages in parallel using multiple
+                a given topic <a href="https://www.confluent.io/blog/introducing-confluent-parallel-message-processing-client/">[3]</a>. It operates by processing messages in parallel using multiple
                 threads on the consumer application’s host machine. 
               </p>
               <p>
@@ -451,7 +451,7 @@
               <p>
                 The worker-based solution that Doordash implemented to address this problem 
                 consists of a single Kafka consumer instance per partition, called a "worker," 
-                which pipes messages into a local queue. Processes called <span class="snippet">task-executors</span>, within the "worker"
+                which pipes messages into a local queue <a href="https://doordash.engineering/2020/09/03/eliminating-task-processing-outages-with-kafka/">[4]</a>. Processes called <span class="snippet">task-executors</span>, within the "worker"
                 instance, then retrieve the events from this queue and process them. 
               </p>
               <p>
@@ -478,7 +478,7 @@
               </p>
               <p>
                 Their solution, Consumer Proxy, solves HoLB by acting as a proxy between the Kafka
-                cluster and multiple instances of the consumer application. With this approach,
+                cluster and multiple instances of the consumer application <a href="https://www.uber.com/en-CA/blog/kafka-async-queuing-with-consumer-proxy/">[5]</a>. With this approach,
                 messages are ingested and then processed in parallel by consumer instances. 
                 Consumer Proxy also uses a system of internal acknowledgments sent by consumer instances,
                 indicating the successful processing of a message. Consumer Proxy only commits messages
@@ -648,7 +648,7 @@
                   a steep learning curve. There are over 40 configuration settings that a Kafka client
                   can specify, making setting up an optimal or even functional consumer application 
                   difficult. Uber, for example, noted that their internal Kafka team was spending about
-                  half of their working hours troubleshooting for consumer application developers [4].
+                  half of their working hours troubleshooting for consumer application developers <a href="https://videos.confluent.io/watch/Jw7M7MpKVE5sS4hu2dWGvU">[6]</a>.
                 </p>
               </div>
               <p>
@@ -664,7 +664,7 @@
               <p>
                 The next decision that we faced was choosing an appropriate network protocol for communication
                 with consumer applications. HTTP was an obvious consideration both for its ubiquity and ease
-                of implementation; however, after further research, we felt gRPC was the better option.
+                of implementation; however, after further research, we felt gRPC was the better option <a href="https://learn.microsoft.com/en-us/aspnet/core/grpc/comparison?view=aspnetcore-7.0">[10]</a>.
               </p>
               <p>
                 gRPC allows us to leverage the benefits of HTTP/2 over HTTP/1.1, specifically regarding the
@@ -713,7 +713,7 @@
               <h6>Goroutines</h6>
               <p>
                 Goroutines can be thought of as non-blocking function loops that can run concurrently
-                with other functions. The resource overhead of creating and running a Goroutine is
+                with other functions <a href="https://softwareengineeringdaily.com/2021/03/03/why-we-switched-from-python-to-go/">[11]</a>. The resource overhead of creating and running a Goroutine is
                 negligible, so it’s not uncommon to see programs with thousands of Goroutines. This 
                 sort of multithreaded behavior is easy to use with Go, as a generic function can be 
                 turned into a Goroutine by simply prepending its invocation with the keyword <span class="snippet">go</span>. Each 
@@ -1058,8 +1058,8 @@
                 respond rapidly. We think this is a relatively easy feature to implement and is likely our next step.              
               </p>
             </div>
-          </div>   
-          <!-- Section 10 -->
+          </div>
+          <!-- Section 11 -->
           <div class="case-study-section team">
             <h2><a href="/team">The Triage Team</a></h2>
             <br />
@@ -1234,6 +1234,42 @@
               </div>
             </div>
           </div>
+          <!-- Section 10: References-->
+          <div class="case-study-section">
+            <h2>References</h2>
+            <p>
+              1. <a href="https://dzone.com/articles/new-research-shows-63-percent-of-enterprises-are-a ">https://dzone.com/articles/new-research-shows-63-percent-of-enterprises-are-a</a>
+            </p> 
+            <p>
+              2. <a href="https://kafka.apache.org/">https://kafka.apache.org/</a>
+            </p>
+            <p>
+              3. <a href="https://www.confluent.io/blog/introducing-confluent-parallel-message-processing-client/">https://www.confluent.io/blog/introducing-confluent-parallel-message-processing-client/</a>
+            </p>
+            <p>
+              4. <a href="https://doordash.engineering/2020/09/03/eliminating-task-processing-outages-with-kafka/">https://doordash.engineering/2020/09/03/eliminating-task-processing-outages-with-kafka/</a>
+            </p>
+            <p>
+              5. <a href="https://www.uber.com/en-CA/blog/kafka-async-queuing-with-consumer-proxy/">https://www.uber.com/en-CA/blog/kafka-async-queuing-with-consumer-proxy/</a>
+            </p>
+            <p>
+              6. <a href="https://videos.confluent.io/watch/Jw7M7MpKVE5sS4hu2dWGvU">https://videos.confluent.io/watch/Jw7M7MpKVE5sS4hu2dWGvU</a>
+            </p>
+            <p>
+              7. <a href="https://www.arxiv-vanity.com/papers/2104.00087/">https://www.arxiv-vanity.com/papers/2104.00087/</a>
+            </p>
+            <p>
+              8. <a href=" https://en.wikipedia.org/wiki/Head-of-line_blocking"> https://en.wikipedia.org/wiki/Head-of-line_blocking</a>
+            </p>
+            <p>
+              9. <a href="https://www.youtube.com/watch?v=j2TeOyjoAZc">https://www.youtube.com/watch?v=j2TeOyjoAZc</a>
+            </p>
+            <p>
+              10. <a href="https://learn.microsoft.com/en-us/aspnet/core/grpc/comparison?view=aspnetcore-7.0">https://learn.microsoft.com/en-us/aspnet/core/grpc/comparison?view=aspnetcore-7.0</a>
+            </p>
+            <p>
+              11. <a href="https://softwareengineeringdaily.com/2021/03/03/why-we-switched-from-python-to-go/">https://softwareengineeringdaily.com/2021/03/03/why-we-switched-from-python-to-go/</a>
+            </p>
         </div>
       </article>
     </div>
