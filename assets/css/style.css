@@ -495,9 +495,9 @@ label {
 }
 
 @media screen and (max-width: 991px) {
-   .w-nav[data-collapse=medium] .w-nav-menu {
+   /* .w-nav[data-collapse=medium] .w-nav-menu {
     display: none
-  }
+  } */
   .w-nav[data-collapse="medium"] .w-nav-button {
     display: block;
   }
@@ -621,6 +621,10 @@ label {
 
 .spin {
   align-self: flex-start;
+}
+
+.fa-github:before {
+  font-size: 2.5rem
 }
 
 .fa-github:hover {
@@ -1563,7 +1567,10 @@ ol.numbered-list li {
   padding-top: 0;
 }
 
-
+figcaption {
+  font-size: 1.1rem;
+  margin-bottom: 35px;
+}
 
 @media screen and (min-width: 1280px) {
   .hero-image-left {
@@ -1583,7 +1590,7 @@ ol.numbered-list li {
   }
 }
 
-@media screen and (max-width: 991px) {
+@media screen and (max-width: 1280px) {
   .footnote {
     font-size: 13px;
   }
@@ -1625,7 +1632,7 @@ ol.numbered-list li {
     font-size: 18px;
   }
   a {
-    font-size: 17px;
+    font-size: 1.5rem;
   }
   .container {
     width: 100%;
@@ -1710,7 +1717,7 @@ ol.numbered-list li {
     display: -ms-flexbox;
     display: flex;
   }
-  /*  .navigation-wrap {
+   /* .navigation-wrap {
     padding-right: 30px;
     padding-left: 30px
   }
@@ -1723,7 +1730,7 @@ ol.numbered-list li {
     -webkit-align-items: center;
     -ms-flex-align: center;
     align-items: center
-  }*/
+  } */
 }
 
 @media screen and (max-width: 767px) {
@@ -1748,9 +1755,10 @@ ol.numbered-list li {
   }
 
   h1 {
-    font-size: 300%;
+    font-size: 250%;
     line-height: 32px;
   }
+
   h6 {
     font-size: 14px;
   }
@@ -1854,26 +1862,13 @@ ol.numbered-list li {
   }
 }
 
-@media screen and (max-width: 900px) {
-  #sidebar {
-    visibility: hidden;
-    opacity: 0;
-    /* transition: visibility 0s, opacity 0.5s linear; */
-  }
-
-  #case-study {
-    width: 100%;
-    padding: 0 1%;
-  }
-}
-
 @media screen and (max-width: 600px) {
   .footnote {
     font-size: 9px;
   }
 
   h1 {
-    font-size: 200%;
+    font-size: 175%;
     line-height: 20px;
   }
 
@@ -1914,17 +1909,47 @@ ol.numbered-list li {
   }
 }
 
+@media screen and (max-width: 1280px) {
+  #sidebar {
+    visibility: hidden;
+    opacity: 0;
+    /* transition: visibility 0s, opacity 0.5s linear; */
+  }
+
+  figcaption {
+    font-size: 0.9rem;
+}
+
+  #case-study {
+    width: 100%;
+    padding: 0 1%;
+  }
+
+  p {
+    font-size: 1.5rem;
+  }
+
+  .w-container {
+    max-width: 728px;
+  }
+}
+
 @media screen and (max-width: 479px) {
   .nav-menu {
     margin-left: 12px;
   }
+
+  figcaption {
+    font-size: 0.8rem;
+}
+
 
   .footnote {
     font-size: 7px;
   }
 
   h1 {
-    font-size: 135%;
+    font-size: 120%;
     line-height: 5px;
   }
   h2 {
@@ -1949,7 +1974,7 @@ ol.numbered-list li {
     font-size: 13px;
   }
   a {
-    font-size: 15px;
+    font-size: 0.8rem;
   }
   .section {
     padding-top: 45px;
@@ -2058,9 +2083,4 @@ ol.numbered-list li {
   .snippet {
     font-size: .8rem;
   }
-}
-
-figcaption {
-  font-size: 1.1rem;
-  margin-bottom: 35px;
 }
